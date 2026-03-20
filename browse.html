@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Browse Books - PaperReborn</title>
+
+<style>
+
+body{
+font-family:Arial;
+margin:0;
+background:#f4f6f9;
+}
+
+/* Header */
+
+header{
+background:#2c3e50;
+color:white;
+padding:15px 40px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+nav a{
+color:white;
+margin-left:20px;
+text-decoration:none;
+}
+
+/* Search Section */
+
+.search-section{
+text-align:center;
+padding:30px;
+background:white;
+}
+
+.search-section input{
+padding:10px;
+width:250px;
+border:1px solid #ccc;
+border-radius:5px;
+}
+
+.search-section select{
+padding:10px;
+border-radius:5px;
+margin-left:10px;
+}
+
+.search-section button{
+padding:10px 15px;
+background:#3498db;
+color:white;
+border:none;
+border-radius:5px;
+cursor:pointer;
+margin-left:10px;
+}
+
+/* Grid Layout */
+
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:25px;
+padding:40px;
+}
+
+/* Book Card */
+
+.card{
+background:white;
+border-radius:8px;
+padding:15px;
+box-shadow:0 2px 6px rgba(0,0,0,0.1);
+transition:0.2s;
+}
+
+.card:hover{
+transform:translateY(-5px);
+}
+
+.card img{
+width:100%;
+height:150px;
+object-fit:cover;
+border-radius:5px;
+}
+
+.card h3{
+margin:10px 0 5px;
+}
+
+.subject{
+font-size:14px;
+color:#666;
+}
+
+.price{
+color:#27ae60;
+font-weight:bold;
+margin:8px 0;
+}
+
+.btn{
+background:#3498db;
+color:white;
+border:none;
+padding:8px 12px;
+border-radius:5px;
+cursor:pointer;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+
+<h2>PaperReborn</h2>
+
+<nav>
+<a href="index.html">Home</a>
+<a href="browse.html">Browse Books</a>
+<a href="sell.html">Sell Notes</a>
+</nav>
+
+</header>
+
+<div class="search-section">
+
+<h2>Find Study Notes & Books</h2>
+
+<input type="text" id="searchInput" placeholder="Search subject or book">
+
+<select>
+<option>All Subjects</option>
+<option>DBMS</option>
+<option>Data Structures</option>
+<option>Operating Systems</option>
+<option>Computer Networks</option>
+</select>
+
+<button onclick="searchBooks()">Search</button>
+
+</div>
+
+<div class="grid"></div>
+
+<script>
+
+let books = JSON.parse(localStorage.getItem("books")) || [];
+let container = document.querySelector(".grid");
+
+// ================= DISPLAY ALL BOOKS =================
+function displayBooks() {
+container.innerHTML = "";
+
+books.forEach((book, index) => {
+
+let card = document.createElement("div");
+card.classList.add("card");
+
+card.innerHTML = `
+<h3>${book.title}</h3>
+<p>${book.subject}</p>
+<div class="price">₹${book.price}</div>
+
+${book.sold ? "<p style='color:red;font-weight:bold;'>SOLD</p>" : ""}
+
+<button onclick="alert('Contact: ${book.contact}')">
+Contact Seller
+</button>
+
+<button onclick="markSold(${index})" style="background:orange;color:white;margin-top:5px;">
+Mark as Sold
+</button>
+
+<button onclick="deleteBook(${index})" style="background:red;color:white;margin-top:5px;">
+Delete
+</button>
+`;
+
+container.appendChild(card);
+
+});
+}
+
+// ================= DELETE =================
+function deleteBook(index) {
+books.splice(index, 1);
+localStorage.setItem("books", JSON.stringify(books));
+displayBooks();
+}
+
+// ================= MARK SOLD =================
+function markSold(index) {
+books[index].sold = true;
+localStorage.setItem("books", JSON.stringify(books));
+displayBooks();
+}
+
+// ================= SEARCH BUTTON =================
+function searchBooks(){
+let input = document.getElementById("searchInput").value.toLowerCase();
+
+let filteredBooks = books.filter(book => 
+book.title.toLowerCase().includes(input) ||
+book.subject.toLowerCase().includes(input)
+);
+
+displayFilteredBooks(filteredBooks);
+}
+
+// ================= DISPLAY FILTERED =================
+function displayFilteredBooks(filteredBooks){
+
+container.innerHTML = "";
+
+// 🔥 If nothing found
+if(filteredBooks.length === 0){
+container.innerHTML = "<h3 style='text-align:center;'>No results found</h3>";
+return;
+}
+
+filteredBooks.forEach((book) => {
+
+let originalIndex = books.indexOf(book);
+
+let card = document.createElement("div");
+card.classList.add("card");
+
+card.innerHTML = `
+<h3>${book.title}</h3>
+<p>${book.subject}</p>
+<div class="price">₹${book.price}</div>
+
+${book.sold ? "<p style='color:red;font-weight:bold;'>SOLD</p>" : ""}
+
+<button onclick="alert('Contact: ${book.contact}')">
+Contact Seller
+</button>
+
+<button onclick="markSold(${originalIndex})" style="background:orange;color:white;margin-top:5px;">
+Mark as Sold
+</button>
+
+<button onclick="deleteBook(${originalIndex})" style="background:red;color:white;margin-top:5px;">
+Delete
+</button>
+`;
+
+container.appendChild(card);
+
+});
+}
+
+// ================= HOMEPAGE SEARCH =================
+let searchQuery = localStorage.getItem("searchQuery");
+
+if(searchQuery && searchQuery.trim() !== ""){
+
+let filteredBooks = books.filter(book => 
+book.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+book.subject.toLowerCase().includes(searchQuery.toLowerCase())
+);
+
+displayFilteredBooks(filteredBooks);
+
+localStorage.removeItem("searchQuery");
+
+} else {
+displayBooks();
+}
+
+</script>
+</body>
+</html>

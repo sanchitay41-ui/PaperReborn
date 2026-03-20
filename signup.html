@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Signup - PaperReborn</title>
+
+<style>
+body{
+font-family:Arial;
+background:#f4f6f9;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+}
+
+.box{
+background:white;
+padding:30px;
+border-radius:10px;
+box-shadow:0 4px 10px rgba(0,0,0,0.2);
+width:300px;
+}
+
+input{
+width:100%;
+padding:10px;
+margin:10px 0;
+border-radius:5px;
+border:1px solid #ccc;
+}
+
+button{
+width:100%;
+padding:10px;
+background:#27ae60;
+color:white;
+border:none;
+border-radius:5px;
+cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<div class="box">
+<h2>Signup</h2>
+
+<input type="text" id="username" placeholder="Username">
+<input type="password" id="password" placeholder="Password">
+
+<button onclick="signup()">Signup</button>
+
+</div>
+
+<script>
+
+function signup(){
+
+let username = document.getElementById("username").value;
+let password = document.getElementById("password").value;
+
+let user = {username, password};
+
+localStorage.setItem("user", JSON.stringify(user));
+
+alert("Account created! Please login.");
+window.location.href = "login.html";
+
+}
+
+</script>
+
+</body>
+</html>

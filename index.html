@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PaperReborn - Student Marketplace</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial, Helvetica, sans-serif;
+}
+
+body{
+background:#f4f6f9;
+color:#333;
+}
+
+/* Header */
+
+header{
+background:#2c3e50;
+color:white;
+padding:15px 50px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+.logo{
+font-size:22px;
+font-weight:bold;
+}
+
+nav a{
+color:white;
+margin-left:20px;
+text-decoration:none;
+font-size:16px;
+}
+
+nav a:hover{
+text-decoration:underline;
+}
+
+/* Hero Section */
+
+.hero{
+text-align:center;
+padding:100px 20px;
+background:linear-gradient(120deg,#1e3c72,#2a5298);
+color:white;
+}
+
+/* 🔥 FIXED BIG FONT */
+.hero h1{
+font-size:64px;
+font-weight:800;
+line-height:1.2;
+margin-bottom:15px;
+text-shadow:2px 2px 8px rgba(0,0,0,0.6);
+}
+
+/* 🔥 FIXED SUBTITLE */
+.hero p{
+font-size:26px;
+margin-bottom:20px;
+opacity:0.95;
+}
+
+/* Search */
+
+.search-bar{
+margin-top:20px;
+}
+
+.search-bar input{
+padding:14px;
+width:320px;
+border:none;
+border-radius:8px;
+font-size:16px;
+}
+
+.search-bar button{
+padding:14px 20px;
+border:none;
+background:#2c3e50;
+color:white;
+border-radius:8px;
+cursor:pointer;
+font-size:16px;
+}
+
+/* Button */
+
+.sell-btn{
+margin-top:30px;
+display:inline-block;
+background:#27ae60;
+color:white;
+padding:16px 30px;
+border-radius:30px;
+text-decoration:none;
+font-weight:bold;
+font-size:18px;
+box-shadow:0 6px 15px rgba(0,0,0,0.3);
+}
+
+/* Featured Books */
+
+.section-title{
+text-align:center;
+margin:40px 0 20px;
+font-size:32px;
+}
+
+.book-container{
+display:flex;
+flex-wrap:wrap;
+justify-content:center;
+gap:20px;
+padding:20px;
+}
+
+/* Book Card */
+
+.book-card{
+background:white;
+width:220px;
+border-radius:8px;
+box-shadow:0 4px 8px rgba(0,0,0,0.1);
+overflow:hidden;
+text-align:center;
+}
+
+.book-card img{
+width:100%;
+height:150px;
+object-fit:cover;
+}
+
+.book-card h3{
+font-size:18px;
+margin:10px 0;
+}
+
+.book-card p{
+font-size:14px;
+color:#555;
+}
+
+.price{
+color:#27ae60;
+font-weight:bold;
+margin:10px 0;
+}
+
+.book-card button{
+background:#3498db;
+border:none;
+color:white;
+padding:10px 15px;
+margin-bottom:15px;
+border-radius:5px;
+cursor:pointer;
+}
+
+/* Footer */
+
+footer{
+background:#2c3e50;
+color:white;
+text-align:center;
+padding:15px;
+margin-top:40px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+<div class="logo">PaperReborn</div>
+
+<nav>
+<a href="index.html">Home</a>
+<a href="browse.html">Browse Books</a>
+<a href="sell.html">Sell Notes</a>
+<a href="login.html">Login</a>
+</nav>
+</header>
+
+<!-- ✅ FIXED (missing >) -->
+<section class="hero">
+
+<h1>Buy & Sell Study Notes Easily</h1>
+<p>Affordable books. Smart learning.</p>
+
+<div class="search-bar">
+<input type="text" id="homeSearch" placeholder="Search books or subjects">
+<button onclick="goToSearch()">Search</button>
+</div>
+
+<a href="sell.html" class="sell-btn">Sell Your Notes</a>
+
+</section>
+
+<h2 class="section-title">Featured Books</h2>
+
+<section class="book-container">
+
+<div class="book-card">
+<img src="https://images.unsplash.com/photo-1512820790803-83ca734da794">
+<h3>DBMS Notes</h3>
+<p>Database Management Systems</p>
+<div class="price">₹120</div>
+<button onclick="alert('More details coming soon!')">View Details</button>
+</div>
+
+<div class="book-card">
+<img src="https://images.unsplash.com/photo-1495446815901-a7297e633e8d">
+<h3>DSA Handbook</h3>
+<p>Data Structures</p>
+<div class="price">₹200</div>
+<button onclick="alert('More details coming soon!')">View Details</button>
+</div>
+
+<div class="book-card">
+<img src="https://images.unsplash.com/photo-1519681393784-d120267933ba">
+<h3>Operating Systems</h3>
+<p>OS Notes</p>
+<div class="price">₹150</div>
+<button onclick="alert('More details coming soon!')">View Details</button>
+</div>
+
+<div class="book-card">
+<img src="https://images.unsplash.com/photo-1524995997946-a1c2e315a42f">
+<h3>Computer Networks</h3>
+<p>CN Quick Notes</p>
+<div class="price">₹100</div>
+<button onclick="alert('More details coming soon!')">View Details</button>
+</div>
+
+</section>
+
+<footer>
+© 2026 PaperReborn | Student Notes Marketplace
+</footer>
+
+<script>
+
+function goToSearch(){
+let query = document.getElementById("homeSearch").value;
+localStorage.setItem("searchQuery", query);
+window.location.href = "browse.html";
+}
+
+</script>
+
+</body>
+</html>

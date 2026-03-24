@@ -46,28 +46,49 @@ cursor:pointer;
 <div class="box">
 <h2>Signup</h2>
 
-<input type="text" id="username" placeholder="Username">
+<input type="email" id="username" placeholder="Email">
 <input type="password" id="password" placeholder="Password">
 
 <button onclick="signup()">Signup</button>
 
 </div>
 
-<script>
+<!-- 🔥 FIREBASE SCRIPT -->
+<script type="module">
 
-function signup(){
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword } 
+from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-let username = document.getElementById("username").value;
-let password = document.getElementById("password").value;
+// 🔥 YOUR CONFIG
+const firebaseConfig = {  
+  apiKey: "AIzaSyCATZmWjriZ0mkeLUh6_TWanlo0qniJf4I",  
+  authDomain: "paperreborn-75d32.firebaseapp.com",  
+  projectId: "paperreborn-75d32",  
+  storageBucket: "paperreborn-75d32.firebasestorage.app",  
+  messagingSenderId: "36968794736",  
+  appId: "1:36968794736:web:52c0fb727d61bfcc0482b5",  
+  measurementId: "G-JZ5L1C2VPK"  
+};
 
-let user = {username, password};
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
 
-localStorage.setItem("user", JSON.stringify(user));
+window.signup = function(){
 
-alert("Account created! Please login.");
-window.location.href = "login.html";
+  let email = document.getElementById("username").value;
+  let password = document.getElementById("password").value;
 
-}
+  createUserWithEmailAndPassword(auth, email, password)
+    .then(() => {
+      alert("Account created!");
+      window.location.href = "login.html";
+    })
+    .catch((error) => {
+      alert(error.message);
+    });
+
+};
 
 </script>
 

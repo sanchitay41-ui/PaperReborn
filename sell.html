@@ -151,7 +151,7 @@ width:100%;
 
 <div class="form-group">
 <label>Description</label>
-<textarea placeholder="Write details about notes or book"></textarea>
+<textarea id="description" placeholder="Write details about notes or book"></textarea>
 </div>
 
 <div class="form-group">
@@ -159,10 +159,6 @@ width:100%;
 <input type="number" id="price" placeholder="Enter price">
 </div>
 
-<div class="form-group">
-<label>Upload Image</label>
-<input type="file">
-</div>
 
 <div class="form-group">
 <label>Contact Information</label>
@@ -180,44 +176,61 @@ width:100%;
 <footer>
 © 2026 PaperReborn | Student Marketplace
 </footer>
-<script>
+<script type="module">
 
-document.getElementById("bookForm").addEventListener("submit", function(e){
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, addDoc } 
+from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getAuth, onAuthStateChanged } 
+from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-e.preventDefault();
-
-let title = document.getElementById("title").value;
-let subject = document.getElementById("subject").value;
-let price = document.getElementById("price").value;
-let contact = document.getElementById("contact").value;
-
-let book = {
-title: title,
-subject: subject,
-price: price,
-contact: contact
+// 🔥 CONFIG
+const firebaseConfig = {  
+  apiKey: "AIzaSyCATZmWjriZ0mkeLUh6_TWanlo0qniJf4I",  
+  authDomain: "paperreborn-75d32.firebaseapp.com",  
+  projectId: "paperreborn-75d32",  
+  storageBucket: "paperreborn-75d32.firebasestorage.app",  
+  messagingSenderId: "36968794736",  
+  appId: "1:36968794736:web:52c0fb727d61bfcc0482b5",  
+  measurementId: "G-JZ5L1C2VPK"  
 };
 
-let books = JSON.parse(localStorage.getItem("books")) || [];
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
 
-books.push(book);
+// 🔒 PROTECT PAGE
+onAuthStateChanged(auth, (user) => {
+  if (!user) {
+    alert("Please login first!");
+    window.location.href = "login.html";
+  }
+});
 
-localStorage.setItem("books", JSON.stringify(books));
+// ================= SUBMIT =================
+document.getElementById("bookForm").addEventListener("submit", async function(e){
 
-alert("Listing Posted!");
+  e.preventDefault();
 
-window.location.href="browse.html";
+  let title = document.getElementById("title").value;
+  let subject = document.getElementById("subject").value;
+  let price = document.getElementById("price").value;
+  let contact = document.getElementById("contact").value;
+  let description = document.getElementById("description").value
+
+  await addDoc(collection(db, "books"), {
+    title,
+    subject,
+    description,
+    price,
+    contact,
+    sold: false,
+    user: auth.currentUser?.email || "unknown"
+  });
+
+  alert("Listing Posted!");
+  window.location.href = "thankyou.html";
 
 });
 
-</script>
-
-</body>
-</html>
-<script>
-document.querySelector("form").addEventListener("submit", function(e){
-e.preventDefault();
-alert("Listing posted!");
-window.location.href="browse.html";
-});
 </script>

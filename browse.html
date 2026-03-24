@@ -138,13 +138,6 @@ cursor:pointer;
 
 <input type="text" id="searchInput" placeholder="Search subject or book">
 
-<select>
-<option>All Subjects</option>
-<option>DBMS</option>
-<option>Data Structures</option>
-<option>Operating Systems</option>
-<option>Computer Networks</option>
-</select>
 
 <button onclick="searchBooks()">Search</button>
 
@@ -152,131 +145,122 @@ cursor:pointer;
 
 <div class="grid"></div>
 
-<script>
+<script type="module">
 
-let books = JSON.parse(localStorage.getItem("books")) || [];
-let container = document.querySelector(".grid");
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, getDocs, deleteDoc, doc, updateDoc } 
+from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-// ================= DISPLAY ALL BOOKS =================
-function displayBooks() {
-container.innerHTML = "";
+// 🔥 YOUR CONFIG (already added)
+const firebaseConfig = {  
+  apiKey: "AIzaSyCATZmWjriZ0mkeLUh6_TWanlo0qniJf4I",  
+  authDomain: "paperreborn-75d32.firebaseapp.com",  
+  projectId: "paperreborn-75d32",  
+  storageBucket: "paperreborn-75d32.firebasestorage.app",  
+  messagingSenderId: "36968794736",  
+  appId: "1:36968794736:web:52c0fb727d61bfcc0482b5",  
+  measurementId: "G-JZ5L1C2VPK"  
+};
 
-books.forEach((book, index) => {
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-let card = document.createElement("div");
-card.classList.add("card");
+const container = document.querySelector(".grid");
 
-card.innerHTML = `
-<h3>${book.title}</h3>
-<p>${book.subject}</p>
-<div class="price">₹${book.price}</div>
+// ================= DISPLAY =================
+async function displayBooks() {
+  container.innerHTML = "";
 
-${book.sold ? "<p style='color:red;font-weight:bold;'>SOLD</p>" : ""}
+  const querySnapshot = await getDocs(collection(db, "books"));
 
-<button onclick="alert('Contact: ${book.contact}')">
-Contact Seller
-</button>
+  querySnapshot.forEach((docSnap) => {
+    const book = docSnap.data();
 
-<button onclick="markSold(${index})" style="background:orange;color:white;margin-top:5px;">
-Mark as Sold
-</button>
+    let card = document.createElement("div");
+    card.classList.add("card");
 
-<button onclick="deleteBook(${index})" style="background:red;color:white;margin-top:5px;">
-Delete
-</button>
+    const currentUser = auth.currentUser?.email;
+
+    card.innerHTML = `
+  <h3>${book.title}</h3>
+  <p><b>Subject:</b> ${book.subject}</p>
+  <p><b>Description:</b> ${book.description || "No description"}</p>
+  <div class="price">₹${book.price}</div>
+
+  ${book.sold ? "<p style='color:red;font-weight:bold;'>SOLD</p>" : ""}
+
+  <button onclick="alert('Contact: ${book.contact}')">
+    Contact Seller
+  </button>
+
+  ${
+  book.user === currentUser ? `
+    <button onclick="markSold('${docSnap.id}')" style="background:orange;color:white;margin-top:5px;">
+      Mark as Sold
+    </button>
+
+    <button onclick="deleteBook('${docSnap.id}')" style="background:red;color:white;margin-top:5px;">
+      Delete
+    </button>
+  ` : ""
+}
 `;
 
-container.appendChild(card);
-
-});
+    container.appendChild(card);
+  });
 }
 
 // ================= DELETE =================
-function deleteBook(index) {
-books.splice(index, 1);
-localStorage.setItem("books", JSON.stringify(books));
+window.deleteBook = async function(id) {
+  await deleteDoc(doc(db, "books", id));
+  displayBooks();
+};
+
 displayBooks();
-}
+window.markSold = async function(id) {
+  await updateDoc(doc(db, "books", id), {
+    sold: true
+  });
+  displayBooks();
+};
+window.searchBooks = async function(){
 
-// ================= MARK SOLD =================
-function markSold(index) {
-books[index].sold = true;
-localStorage.setItem("books", JSON.stringify(books));
-displayBooks();
-}
+  let input = document.getElementById("searchInput").value.toLowerCase();
 
-// ================= SEARCH BUTTON =================
-function searchBooks(){
-let input = document.getElementById("searchInput").value.toLowerCase();
+  container.innerHTML = "";
 
-let filteredBooks = books.filter(book => 
-book.title.toLowerCase().includes(input) ||
-book.subject.toLowerCase().includes(input)
-);
+  const querySnapshot = await getDocs(collection(db, "books"));
 
-displayFilteredBooks(filteredBooks);
-}
+  querySnapshot.forEach((docSnap) => {
+    const book = docSnap.data();
 
-// ================= DISPLAY FILTERED =================
-function displayFilteredBooks(filteredBooks){
+    if(
+      book.title.toLowerCase().includes(input) ||
+      (book.description && book.description.toLowerCase().includes(input))
+    ){
+      let card = document.createElement("div");
+      card.classList.add("card");
 
-container.innerHTML = "";
+      card.innerHTML = `
+        <h3>${book.title}</h3>
+        <p><b>Description:</b> ${book.description || "No description"}</p>
+        <div class="price">₹${book.price}</div>
 
-// 🔥 If nothing found
-if(filteredBooks.length === 0){
-container.innerHTML = "<h3 style='text-align:center;'>No results found</h3>";
-return;
-}
+        ${book.sold ? "<p style='color:red;'>SOLD</p>" : ""}
 
-filteredBooks.forEach((book) => {
+        <button onclick="alert('Contact: ${book.contact}')">Contact Seller</button>
+        <button onclick="markSold('${docSnap.id}')">Mark as Sold</button>
+        <button onclick="deleteBook('${docSnap.id}')">Delete</button>
+      `;
 
-let originalIndex = books.indexOf(book);
+      container.appendChild(card);
+    }
 
-let card = document.createElement("div");
-card.classList.add("card");
+  });
 
-card.innerHTML = `
-<h3>${book.title}</h3>
-<p>${book.subject}</p>
-<div class="price">₹${book.price}</div>
-
-${book.sold ? "<p style='color:red;font-weight:bold;'>SOLD</p>" : ""}
-
-<button onclick="alert('Contact: ${book.contact}')">
-Contact Seller
-</button>
-
-<button onclick="markSold(${originalIndex})" style="background:orange;color:white;margin-top:5px;">
-Mark as Sold
-</button>
-
-<button onclick="deleteBook(${originalIndex})" style="background:red;color:white;margin-top:5px;">
-Delete
-</button>
-`;
-
-container.appendChild(card);
-
-});
-}
-
-// ================= HOMEPAGE SEARCH =================
-let searchQuery = localStorage.getItem("searchQuery");
-
-if(searchQuery && searchQuery.trim() !== ""){
-
-let filteredBooks = books.filter(book => 
-book.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-book.subject.toLowerCase().includes(searchQuery.toLowerCase())
-);
-
-displayFilteredBooks(filteredBooks);
-
-localStorage.removeItem("searchQuery");
-
-} else {
-displayBooks();
-}
+};
 
 </script>
 </body>
